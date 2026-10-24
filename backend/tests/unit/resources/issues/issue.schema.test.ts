@@ -15,6 +15,42 @@ describe('createIssueSchema', () => {
     expect(result.success).toBe(true);
   });
 
+  it.each(['backlog', 'todo', 'in_progress', 'done', 'canceled'])('accepts state %s', (state) => {
+    const result = createIssueSchema.safeParse({
+      body: { title: 'Fix bug', state },
+      params: { teamId: 'team-1' },
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it.each(['invalid', 'in progress', ''])('rejects invalid state %s', (state) => {
+    const result = createIssueSchema.safeParse({
+      body: { title: 'Fix bug', state },
+      params: { teamId: 'team-1' },
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it.each([0, 1, 2, 3, 4])('accepts priority %i', (priority) => {
+    const result = createIssueSchema.safeParse({
+      body: { title: 'Fix bug', priority },
+      params: { teamId: 'team-1' },
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it.each([-1, 5, 1.5])('rejects invalid priority %s', (priority) => {
+    const result = createIssueSchema.safeParse({
+      body: { title: 'Fix bug', priority },
+      params: { teamId: 'team-1' },
+    });
+
+    expect(result.success).toBe(false);
+  });
+
   it('rejects empty title', () => {
     const result = createIssueSchema.safeParse({
       body: { title: '' },
@@ -42,6 +78,42 @@ describe('updateIssueSchema', () => {
     });
 
     expect(result.success).toBe(true);
+  });
+
+  it.each(['backlog', 'todo', 'in_progress', 'done', 'canceled'])('accepts state %s', (state) => {
+    const result = updateIssueSchema.safeParse({
+      body: { state },
+      params: { issueId: 'issue-1' },
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it.each(['invalid', 'in progress', ''])('rejects invalid state %s', (state) => {
+    const result = updateIssueSchema.safeParse({
+      body: { state },
+      params: { issueId: 'issue-1' },
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it.each([0, 1, 2, 3, 4])('accepts priority %i', (priority) => {
+    const result = updateIssueSchema.safeParse({
+      body: { priority },
+      params: { issueId: 'issue-1' },
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it.each([-1, 5, 1.5])('rejects invalid priority %s', (priority) => {
+    const result = updateIssueSchema.safeParse({
+      body: { priority },
+      params: { issueId: 'issue-1' },
+    });
+
+    expect(result.success).toBe(false);
   });
 
   it('rejects empty body update', () => {
